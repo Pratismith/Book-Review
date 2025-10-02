@@ -40,4 +40,26 @@ res.status(500).json({ message: 'Server error' });
 };
 
 
-exports.delete
+exports.deleteReview = async (req, res) => {
+try {
+const review = await Review.findById(req.params.id);
+if (!review) return res.status(404).json({ message: 'Review not found' });
+if (review.userId.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Not allowed' });
+
+await review.remove();
+res.json({ message: 'Review removed' });
+} catch (err) {
+console.error(err);
+res.status(500).json({ message: 'Server error' });
+}
+};
+
+exports.getReviewsForBook = async (req, res) => {
+try {
+const reviews = await Review.find({ bookId: req.params.bookId }).populate('userId', 'name');
+res.json(reviews);
+} catch (err) {
+console.error(err);
+res.status(500).json({ message: 'Server error' });
+}
+};

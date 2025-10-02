@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const reviewController = require('../controllers/reviewController');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../middlewares/auth');
 
 // Add review to a book
 router.post('/:bookId', protect, reviewController.addReview);

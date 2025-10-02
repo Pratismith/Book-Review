@@ -2,8 +2,7 @@ const Book = require('../models/Book');
 const Review = require('../models/Review');
 
 
-// Create book
-exports.createBook = async (req, res) => {
+exports.addBook = async (req, res) => {
 try {
 const { title, author, description, genre, year } = req.body;
 const book = new Book({ title, author, description, genre, year, addedBy: req.user._id });
@@ -53,8 +52,7 @@ res.status(500).json({ message: 'Server error' });
 };
 
 
-// List books with pagination and optional search/filter
-exports.listBooks = async (req, res) => {
+exports.getBooks = async (req, res) => {
 try {
 const page = parseInt(req.query.page) || 1;
 const limit = 5;

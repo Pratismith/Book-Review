@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
-const { protect } = require('../middleware/auth');
-const auth = require("../middlewares/auth");
+const { protect } = require('../middlewares/auth');
 
 // Add a new book
 router.post('/', protect, bookController.addBook);
