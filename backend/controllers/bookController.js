@@ -43,7 +43,7 @@ if (book.addedBy.toString() !== req.user._id.toString()) return res.status(403).
 
 
 await Review.deleteMany({ bookId: book._id });
-await book.remove();
+await book.deleteOne();
 res.json({ message: 'Book removed' });
 } catch (err) {
 console.error(err);
@@ -58,19 +58,87 @@ const page = parseInt(req.query.page) || 1;
 const limit = 5;
 const skip = (page - 1) * limit;
 
-
 const q = (req.query.q || '').trim();
 const genre = req.query.genre;
+const sortBy = req.query.sortBy; // 'year', 'rating', or default (newest)
 
+// Build match filter for aggregation
+const matchFilter = {};
+if (q) matchFilter.$or = [ { title: new RegExp(q, 'i') }, { author: new RegExp(q, 'i') } ];
+if (genre) matchFilter.genre = genre;
 
-const filter = {};
-if (q) filter.$or = [ { title: new RegExp(q, 'i') }, { author: new RegExp(q, 'i') } ];
-if (genre) filter.genre = genre;
+// If sorting by rating, use aggregation
+if (sortBy === 'rating') {
+  const aggregation = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'bookId',
+        as: 'reviews'
+      }
+    },
+    {
+      $addFields: {
+        avgRating: {
+          $cond: {
+            if: { $gt: [{ $size: '$reviews' }, 0] },
+            then: { $avg: '$reviews.rating' },
+            else: 0
+          }
+        }
+      }
+    },
+    { $sort: { avgRating: -1 } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'addedBy',
+        foreignField: '_id',
+        as: 'addedBy'
+      }
+    },
+    { $unwind: { path: '$addedBy', preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        author: 1,
+        description: 1,
+        genre: 1,
+        year: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        avgRating: 1,
+        'addedBy._id': 1,
+        'addedBy.name': 1
+      }
+    }
+  ];
 
+  const totalResult = await Book.aggregate([
+    { $match: matchFilter },
+    { $count: 'total' }
+  ]);
+  const total = totalResult.length > 0 ? totalResult[0].total : 0;
 
-const total = await Book.countDocuments(filter);
-const books = await Book.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('addedBy', 'name');
+  aggregation.push({ $skip: skip });
+  aggregation.push({ $limit: limit });
 
+  const books = await Book.aggregate(aggregation);
+
+  return res.json({ books, total, page, pages: Math.ceil(total / limit) });
+}
+
+// For non-rating sorts, use regular query
+let sortOptions = { createdAt: -1 }; // default: newest first
+if (sortBy === 'year') {
+  sortOptions = { year: -1 }; // highest year first
+}
+
+const total = await Book.countDocuments(matchFilter);
+const books = await Book.find(matchFilter).sort(sortOptions).skip(skip).limit(limit).populate('addedBy', 'name');
 
 res.json({ books, total, page, pages: Math.ceil(total / limit) });
 } catch (err) {

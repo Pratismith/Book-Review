@@ -46,7 +46,7 @@ const review = await Review.findById(req.params.id);
 if (!review) return res.status(404).json({ message: 'Review not found' });
 if (review.userId.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Not allowed' });
 
-await review.remove();
+await review.deleteOne();
 res.json({ message: 'Review removed' });
 } catch (err) {
 console.error(err);
