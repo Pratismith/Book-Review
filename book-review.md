@@ -11,7 +11,7 @@ A full-stack book review application built with Node.js/Express backend and Reac
 │   ├── controllers/  # Route handlers (auth, books, reviews)
 │   ├── middlewares/  # Authentication middleware
 │   ├── models/       # Mongoose models (User, Book, Review)
-│   ├── routes/       # API routes
+│   ├── routes/       # API routeshttps://play.ht/app/audio?id=00b58a9e-4a07-4633-a019-1d4093cd1f74
 │   ├── server.js     # Main server file
 │   └── .env          # Environment variables (MongoDB URI, JWT secret)
 │
@@ -56,7 +56,6 @@ A full-stack book review application built with Node.js/Express backend and Reac
 
 ### Frontend (Port 5000)
 - Runs on `0.0.0.0:5000`
-- Configured to accept all hosts for Replit proxy
 - API calls route to `localhost:3001` in development
 
 ## API Endpoints
@@ -83,13 +82,3 @@ A full-stack book review application built with Node.js/Express backend and Reac
 - MongoDB connection uses existing Atlas cluster from .env file
 - All host verification bypassed for Replit proxy compatibility
 
-## Recent Changes (Oct 2, 2025)
-- Imported from GitHub and set up in Replit environment
-- Built complete React frontend from scratch (all files were empty on import)
-- Configured Vite with proper host settings (0.0.0.0:5000, allowedHosts: true)
-- Fixed backend routes to use correct middleware path (`middlewares/` not `middleware/`)
-- Corrected controller function names to match route definitions
-- Completed incomplete reviewController.js file
-- Updated MongoDB connection to remove deprecated options
-- Created comprehensive React application with all pages and components
-- Set up Tailwind CSS with proper configuration
