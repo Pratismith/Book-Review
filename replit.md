@@ -127,7 +127,17 @@ Located in `backend/.env`:
    - Error: "Could not connect to any servers in your MongoDB Atlas cluster"
    - Solution: Whitelist Replit's IP in MongoDB Atlas Network Access settings
 
-## Deployment Notes
-- Frontend is production-ready with Vite build
-- Backend uses Express and is suitable for deployment
+## Deployment Configuration
+- **Type**: VM (Always running, maintains state)
+- **Build**: Compiles frontend with `npm run build` in frontend directory
+- **Run**: Starts backend with `NODE_ENV=production node server.js`
+- **Production Port**: 5000 (backend serves both API and frontend static files)
+- **Development Ports**: Backend on 3001, Frontend on 5000
+
+### Production Behavior
+In production mode:
+- Backend serves on `0.0.0.0:5000`
+- Frontend static files are served from `frontend/dist`
+- API endpoints are available at `/api/*`
+- All other routes serve the React SPA
 - MongoDB connection needs to be accessible from deployment environment
