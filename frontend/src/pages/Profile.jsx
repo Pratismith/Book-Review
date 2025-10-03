@@ -46,60 +46,107 @@ const Profile = () => {
   if (!user) return null
 
   return (
-    <div>
-      <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">My Profile</h1>
-        <div className="space-y-2">
-          <p className="text-gray-700">
-            <span className="font-semibold">Name:</span> {user.name}
-          </p>
-          <p className="text-gray-700">
-            <span className="font-semibold">Email:</span> {user.email}
-          </p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">My Books</h2>
-        
-        {loading ? (
-          <p>Loading...</p>
-        ) : myBooks.length === 0 ? (
-          <p className="text-gray-500">You haven't added any books yet.</p>
-        ) : (
-          <div className="space-y-4">
-            {myBooks.map((book) => (
-              <div
-                key={book._id}
-                className="border border-gray-200 rounded-lg p-4 flex justify-between items-start"
-              >
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800">{book.title}</h3>
-                  <p className="text-gray-600">by {book.author}</p>
-                  {book.genre && (
-                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-2">
-                      {book.genre}
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Link
-                    to={`/edit-book/${book._id}`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(book._id)}
-                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-10 mb-10 border border-amber-200">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-full p-6">
+                <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-amber-900 mb-2">My Profile</h1>
+                <div className="space-y-1 text-gray-700">
+                  <p className="text-xl">
+                    <span className="font-semibold text-amber-800">Name:</span> {user.name}
+                  </p>
+                  <p className="text-lg">
+                    <span className="font-semibold text-amber-800">Email:</span> {user.email}
+                  </p>
                 </div>
               </div>
-            ))}
+            </div>
+            <Link
+              to="/add-book"
+              className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            >
+              + Add New Book
+            </Link>
           </div>
-        )}
+        </div>
+
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-amber-200">
+          <h2 className="text-3xl font-bold text-amber-900 mb-8 flex items-center">
+            <svg className="w-8 h-8 mr-3 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+            My Books ({myBooks.length})
+          </h2>
+          
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
+              <p className="mt-4 text-amber-800">Loading your books...</p>
+            </div>
+          ) : myBooks.length === 0 ? (
+            <div className="text-center py-16">
+              <svg className="w-24 h-24 mx-auto text-amber-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <p className="text-xl text-gray-600 mb-6">You haven't added any books yet.</p>
+              <Link
+                to="/add-book"
+                className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-bold transition-all duration-300 hover:scale-105"
+              >
+                Add Your First Book
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {myBooks.map((book) => (
+                <div
+                  key={book._id}
+                  className="border-2 border-amber-200 rounded-2xl p-6 hover:border-amber-400 transition-all duration-300 bg-gradient-to-r from-amber-50 to-orange-50"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-amber-900 mb-2">{book.title}</h3>
+                      <p className="text-amber-600 font-medium mb-3">by {book.author}</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {book.genre && (
+                          <span className="inline-block bg-amber-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                            {book.genre}
+                          </span>
+                        )}
+                        {book.year && (
+                          <span className="inline-block bg-orange-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                            {book.year}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Link
+                        to={`/edit-book/${book._id}`}
+                        className="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(book._id)}
+                        className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

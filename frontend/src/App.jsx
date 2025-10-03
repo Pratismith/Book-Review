@@ -12,19 +12,17 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
           <Navbar />
-          <div className="container mx-auto px-4 py-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/books/:id" element={<BookDetails />} />
-              <Route path="/add-book" element={<AddEditBook />} />
-              <Route path="/edit-book/:id" element={<AddEditBook />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/books/:id" element={<BookDetails />} />
+            <Route path="/add-book" element={<AddEditBook />} />
+            <Route path="/edit-book/:id" element={<AddEditBook />} />
+          </Routes>
         </div>
       </Router>
     </AuthProvider>

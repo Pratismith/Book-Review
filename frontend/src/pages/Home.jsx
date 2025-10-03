@@ -121,8 +121,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import BookCard from '../components/BookCard'
-// Use direct Unsplash URL for BG (fast, no assets folder needed); swap to local if preferred
-const bookshelfBg = 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80'
 
 const Home = () => {
   const [books, setBooks] = useState([])
@@ -160,30 +158,36 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section with Background */}
-      <section 
-        className="relative min-h-[60vh] bg-cover bg-fixed bg-center flex items-center justify-center px-4 text-white"
-        style={{ backgroundImage: `url(${bookshelfBg})` }}
-      >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/50"></div>
+      {/* Hero Section with Gradient Background */}
+      <section className="relative min-h-[70vh] bg-gradient-to-br from-amber-900 via-orange-800 to-amber-700 flex items-center justify-center px-4 text-white overflow-hidden">
+        {/* Decorative Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
+        </div>
         
-        <div className="relative z-10 max-w-4xl mx-auto text-center w-full px-4">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-2xl animate-fade-in">
-            Book Haven
+        <div className="relative z-10 max-w-5xl mx-auto text-center w-full px-4">
+          <div className="mb-6">
+            <svg className="w-20 h-20 mx-auto text-amber-200 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 drop-shadow-2xl animate-fade-in">
+            Discover Your Next Great Read
           </h1>
-          <p className="text-lg md:text-xl mb-8 opacity-95 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            Discover captivating stories, share honest reviews, and connect with a community of passionate readers.
+          <p className="text-xl md:text-2xl mb-10 opacity-95 max-w-3xl mx-auto leading-relaxed">
+            Explore thousands of book reviews from our passionate community
           </p>
           
           {/* Enhanced Search Form */}
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto mb-8">
             <input
               type="text"
               placeholder="Search by title or author..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-6 py-4 rounded-full text-black text-lg font-medium shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400/50 transition-all duration-300"
+              className="flex-1 px-6 py-4 rounded-full text-gray-900 text-lg font-medium shadow-2xl focus:outline-none focus:ring-4 focus:ring-amber-400/50 transition-all duration-300 placeholder:text-gray-500"
             />
             <select
               value={genre}
@@ -191,7 +195,7 @@ const Home = () => {
                 setGenre(e.target.value)
                 setPage(1)
               }}
-              className="px-6 py-4 rounded-full text-black text-lg font-medium shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400/50 transition-all duration-300"
+              className="px-6 py-4 rounded-full text-gray-900 text-lg font-medium shadow-2xl focus:outline-none focus:ring-4 focus:ring-amber-400/50 transition-all duration-300"
             >
               <option value="">All Genres</option>
               <option value="Fiction">Fiction</option>
@@ -203,43 +207,37 @@ const Home = () => {
             </select>
             <button
               type="submit"
-              className="bg-amber-500 hover:bg-amber-600 text-black px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 whitespace-nowrap"
+              className="bg-white hover:bg-amber-100 text-amber-900 px-10 py-4 rounded-full font-bold text-lg shadow-2xl transition-all duration-300 hover:scale-105 whitespace-nowrap"
             >
-              Explore Books
+              Search
             </button>
           </form>
-          
-          {/* Optional CTA if no books */}
-          {books.length === 0 && !loading && (
-            <Link
-              to="/add-book"
-              className="mt-6 inline-block bg-white hover:bg-gray-100 text-amber-600 px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition-all duration-300"
-            >
-              Be the First to Add a Book!
-            </Link>
-          )}
         </div>
       </section>
 
       {/* Books Grid Section */}
-      <section className="relative py-12 px-4 bg-gradient-to-b from-gray-50 to-white min-h-screen">
+      <section className="relative py-16 px-4 min-h-screen container mx-auto">
         {loading ? (
-          <div className="text-center py-16">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-            <p className="mt-2 text-gray-600">Loading your library...</p>
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
+            <p className="mt-4 text-amber-800 text-lg font-medium">Loading your library...</p>
           </div>
         ) : books.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">
-            <p className="text-2xl mb-4">No books found yet.</p>
+          <div className="text-center py-20">
+            <svg className="w-24 h-24 mx-auto text-amber-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <p className="text-2xl text-gray-700 mb-6 font-semibold">No books found yet.</p>
             <Link
               to="/add-book"
-              className="bg-amber-500 hover:bg-amber-600 text-black px-8 py-3 rounded-full font-semibold transition-all duration-300"
+              className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 hover:scale-105"
             >
               Add Your First Book
             </Link>
           </div>
         ) : (
           <>
+            <h2 className="text-4xl font-bold text-amber-900 mb-10 text-center">Featured Books</h2>
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {books.map((book) => (
@@ -248,21 +246,21 @@ const Home = () => {
               </div>
 
               {totalPages > 1 && (
-                <div className="flex justify-center gap-4">
+                <div className="flex justify-center gap-4 items-center">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-300 font-semibold"
+                    className="px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
                   >
                     Previous
                   </button>
-                  <span className="px-6 py-3 text-gray-700 font-medium bg-white rounded-full shadow-sm">
+                  <span className="px-6 py-3 text-amber-900 font-bold bg-white rounded-full shadow-md text-lg">
                     Page {page} of {totalPages}
                   </span>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-300 font-semibold"
+                    className="px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
                   >
                     Next
                   </button>
