@@ -39,9 +39,11 @@ A full-stack book review application built with Node.js/Express backend and Reac
 - **User Authentication**: Sign up and login with JWT tokens, password hashing with bcrypt
 - **Book Management**: Add, edit, and delete books (authenticated users only, owner-only edit/delete)
 - **Book Discovery**: Browse books with pagination (5 per page), search by title/author, filter by genre
+- **Advanced Sorting**: Sort books by newest first (default), published year, or average rating (using MongoDB aggregation)
 - **Review System**: Rate books (1-5 stars), write reviews, edit/delete own reviews, view average ratings
 - **Profile Page**: View user's added books and reviews with detailed information
-- **Responsive UI**: Built with Tailwind CSS, modern amber/brown theme
+- **Dark/Light Mode**: Toggle between light and dark themes with smooth transitions
+- **Responsive UI**: Built with Tailwind CSS, modern amber/brown theme with dark mode support
 
 ## Tech Stack
 ### Backend
@@ -115,6 +117,19 @@ Located in `backend/.env`:
 - `JWT_SECRET` - Secret key for JWT token generation
 
 ## Recent Changes
+- **Oct 3, 2025**: Backend Improvements & UI Enhancements
+  - **Dark Mode Toggle**: Added dark/light mode toggle button on homepage (moon/sun icon in top-right corner)
+    - Smooth transitions between light and dark themes
+    - Themes the hero section with gradient backgrounds
+  - **Advanced Sorting**: Implemented sorting dropdown for books
+    - Sort by: Newest First (default), Published Year, or Average Rating
+    - **Critical Fix**: Rating sort now uses MongoDB aggregation pipeline to properly sort across entire dataset before pagination
+    - Previous implementation only sorted current page, now correctly sorts all books by rating before applying pagination
+  - **Backend Improvements**: 
+    - Replaced deprecated `.remove()` methods with `.deleteOne()` in book and review controllers
+    - Implemented MongoDB aggregation with $lookup, $addFields, and proper pagination for rating sort
+    - Maintained backward compatibility with year and default (newest) sorting
+
 - **Oct 3, 2025**: Complete Feature Implementation & Verification
   - **Profile Page Enhancement**: Added user reviews section showing all reviews with book titles, ratings, and dates
   - **Features Verification**: Created comprehensive FEATURES_VERIFICATION.md documenting all implemented requirements
