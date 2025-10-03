@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 import BookCard from '../components/BookCard'
 
 const Home = () => {
+  const { user } = useAuth()
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -61,6 +63,30 @@ const Home = () => {
             Explore thousands of book reviews from our passionate community
           </p>
           
+          {/* Auth Call-to-Action for Non-Logged-In Users */}
+          {!user && (
+            <div className="mb-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                to="/login"
+                className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-2 border-white px-10 py-4 rounded-full font-bold text-lg shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="bg-white hover:bg-amber-50 text-amber-900 px-10 py-4 rounded-full font-bold text-lg shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Sign Up Free
+              </Link>
+            </div>
+          )}
+          
           {/* Enhanced Search Form */}
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto mb-8">
             <input
@@ -109,12 +135,32 @@ const Home = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             <p className="text-2xl text-gray-700 mb-6 font-semibold">No books found yet.</p>
-            <Link
-              to="/add-book"
-              className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              Add Your First Book
-            </Link>
+            {user ? (
+              <Link
+                to="/add-book"
+                className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                Add Your First Book
+              </Link>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-gray-600 mb-4">Sign up to start adding books and reviews!</p>
+                <div className="flex gap-4 justify-center">
+                  <Link
+                    to="/login"
+                    className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 hover:scale-105"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 hover:scale-105"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <>

@@ -157,7 +157,35 @@ const BookDetails = () => {
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-amber-200">
           <h2 className="text-3xl font-bold text-amber-900 mb-8">Reviews</h2>
           
-          {user && !userReview && (
+          {!user ? (
+            <div className="mb-10 p-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-300 text-center">
+              <svg className="w-16 h-16 mx-auto text-amber-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <h3 className="text-2xl font-bold text-amber-900 mb-4">Want to Share Your Review?</h3>
+              <p className="text-gray-700 mb-6">Sign up or log in to share your thoughts about this book with the community!</p>
+              <div className="flex gap-4 justify-center">
+                <Link
+                  to="/login"
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-full font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                  Sign Up Free
+                </Link>
+              </div>
+            </div>
+          ) : user && !userReview ? (
             <form onSubmit={handleSubmitReview} className="mb-10 p-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200">
               <h3 className="text-2xl font-bold text-amber-900 mb-6">Write a Review</h3>
               <div className="mb-6">
@@ -192,7 +220,15 @@ const BookDetails = () => {
                 {submitting ? 'Submitting...' : 'Submit Review'}
               </button>
             </form>
-          )}
+          ) : user && userReview ? (
+            <div className="mb-10 p-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-green-200 text-center">
+              <svg className="w-16 h-16 mx-auto text-green-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-2xl font-bold text-green-900 mb-2">You've Already Reviewed This Book!</h3>
+              <p className="text-gray-700">Thank you for sharing your thoughts! You can see your review below.</p>
+            </div>
+          ) : null}
 
           {reviews.length === 0 ? (
             <div className="text-center py-12">

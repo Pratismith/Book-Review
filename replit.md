@@ -114,6 +114,16 @@ Located in `backend/.env`:
 - `JWT_SECRET` - Secret key for JWT token generation
 
 ## Recent Changes
+- **Oct 3, 2025**: UI Upgrade & Authentication Enhancements
+  - **Modern Design System**: Completely redesigned UI with warm amber/brown color palette
+  - **Visual Enhancements**: Added book cover images, gradients, shadows, and smooth animations
+  - **Authentication UX**: Added prominent auth prompts throughout the app
+    - Homepage hero section: Login/Signup buttons for non-logged-in users
+    - BookDetails page: Auth prompts for review submissions
+    - Smart conditional rendering based on user login status
+  - **Cache Control**: Added no-cache headers to Vite config for better preview updates
+  - **Comprehensive README**: Created detailed documentation with setup, troubleshooting, and customization guides
+  
 - **Oct 3, 2025**: Initial Replit setup completed
   - Installed Node.js 20 and all dependencies
   - Fixed project structure (removed duplicate frontend files from backend/middlewares/)
