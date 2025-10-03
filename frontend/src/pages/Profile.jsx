@@ -7,6 +7,7 @@ const Profile = () => {
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const [myBooks, setMyBooks] = useState([])
+  const [myReviews, setMyReviews] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -14,18 +15,32 @@ const Profile = () => {
       navigate('/login')
       return
     }
-    fetchMyBooks()
+    fetchMyData()
   }, [user, navigate])
 
-  const fetchMyBooks = async () => {
+  const fetchMyData = async () => {
     try {
       const { data } = await api.get('/books')
       const userBooks = data.books.filter(
         (book) => book.addedBy?._id === user._id
       )
       setMyBooks(userBooks)
+
+      const allReviews = []
+      for (const book of data.books) {
+        const reviewData = await api.get(`/reviews/${book._id}`)
+        const userReviewsForBook = reviewData.data.filter(
+          (review) => review.userId?._id === user._id
+        )
+        allReviews.push(...userReviewsForBook.map(review => ({
+          ...review,
+          bookTitle: book.title,
+          bookId: book._id
+        })))
+      }
+      setMyReviews(allReviews)
     } catch (error) {
-      console.error('Error fetching books:', error)
+      console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
     }
@@ -141,6 +156,71 @@ const Profile = () => {
                         Delete
                       </button>
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* User's Reviews Section */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-amber-200 mt-10">
+          <h2 className="text-3xl font-bold text-amber-900 mb-8 flex items-center">
+            <svg className="w-8 h-8 mr-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            My Reviews ({myReviews.length})
+          </h2>
+          
+          {loading ? (
+            <div className="text-center py-10">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
+            </div>
+          ) : myReviews.length === 0 ? (
+            <div className="text-center py-16 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl">
+              <svg className="w-20 h-20 mx-auto text-amber-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              <p className="text-xl text-gray-700 mb-2 font-semibold">No reviews yet</p>
+              <p className="text-gray-600">Start reviewing books to share your thoughts!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {myReviews.map((review) => (
+                <div key={review._id} className="bg-gradient-to-br from-white to-amber-50 rounded-2xl p-6 border-2 border-amber-200 hover:border-amber-300 transition-all duration-300 hover:shadow-lg">
+                  <div className="flex justify-between items-start mb-3">
+                    <Link 
+                      to={`/book/${review.bookId}`}
+                      className="text-xl font-bold text-amber-900 hover:text-amber-700 transition-colors"
+                    >
+                      📖 {review.bookTitle}
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center bg-amber-100 px-3 py-1 rounded-full">
+                        <span className="text-amber-600 font-bold mr-1">{review.rating}</span>
+                        <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  {review.reviewText && (
+                    <p className="text-gray-700 leading-relaxed mb-3">{review.reviewText}</p>
+                  )}
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">
+                      {new Date(review.createdAt).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                    <Link 
+                      to={`/book/${review.bookId}`}
+                      className="text-amber-600 hover:text-amber-700 font-semibold hover:underline"
+                    >
+                      View Book →
+                    </Link>
                   </div>
                 </div>
               ))}
