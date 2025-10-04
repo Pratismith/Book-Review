@@ -45,6 +45,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/db');
 
 dotenv.config();
@@ -65,13 +66,20 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/reviews', require('./routes/reviews'));
 
-// ✅ Serve frontend build
-const frontendPath = path.join(__dirname, 'frontend', 'dist');
-app.use(express.static(frontendPath));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+// Serve frontend build (production)
+const frontendPath = path.join(__dirname, '..', 'frontend', 'dist');
+if (fs.existsSync(frontendPath)) {
+  app.use(express.static(frontendPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+  console.log('✅ Serving frontend from:', frontendPath);
+} else {
+  console.log('⚠️  Frontend build not found at:', frontendPath);
+  console.log('   API only mode - frontend should be running separately');
+}
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3001;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+app.listen(PORT, HOST, () => console.log(`✅ Server running on ${HOST}:${PORT}`));
