@@ -78,77 +78,74 @@ const matchFilter = {};
 if (q) matchFilter.$or = [ { title: new RegExp(q, 'i') }, { author: new RegExp(q, 'i') } ];
 if (genre) matchFilter.genre = genre;
 
-if (sortBy === 'rating') {
-  const aggregation = [
-    { $match: matchFilter },
-    {
-      $lookup: {
-        from: 'reviews',
-        localField: '_id',
-        foreignField: 'bookId',
-        as: 'reviews'
-      }
-    },
-    {
-      $addFields: {
-        avgRating: {
-          $cond: {
-            if: { $gt: [{ $size: '$reviews' }, 0] },
-            then: { $avg: '$reviews.rating' },
-            else: 0
-          }
-        }
-      }
-    },
-    { $sort: { avgRating: -1 } },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'addedBy',
-        foreignField: '_id',
-        as: 'addedBy'
-      }
-    },
-    { $unwind: { path: '$addedBy', preserveNullAndEmptyArrays: true } },
-    {
-      $project: {
-        _id: 1,
-        title: 1,
-        author: 1,
-        description: 1,
-        genre: 1,
-        year: 1,
-        coverImage: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        avgRating: 1,
-        'addedBy._id': 1,
-        'addedBy.name': 1
-      }
+const aggregation = [
+  { $match: matchFilter },
+  {
+    $lookup: {
+      from: 'reviews',
+      localField: '_id',
+      foreignField: 'bookId',
+      as: 'reviews'
     }
-  ];
-
-  const totalResult = await Book.aggregate([
-    { $match: matchFilter },
-    { $count: 'total' }
-  ]);
-  const total = totalResult.length > 0 ? totalResult[0].total : 0;
-
-  aggregation.push({ $skip: skip });
-  aggregation.push({ $limit: limit });
-
-  const books = await Book.aggregate(aggregation);
-
-  return res.json({ books, total, page, pages: Math.ceil(total / limit) });
-}
+  },
+  {
+    $addFields: {
+      avgRating: {
+        $cond: {
+          if: { $gt: [{ $size: '$reviews' }, 0] },
+          then: { $avg: '$reviews.rating' },
+          else: 0
+        }
+      },
+      reviewCount: { $size: '$reviews' }
+    }
+  },
+  {
+    $lookup: {
+      from: 'users',
+      localField: 'addedBy',
+      foreignField: '_id',
+      as: 'addedBy'
+    }
+  },
+  { $unwind: { path: '$addedBy', preserveNullAndEmptyArrays: true } },
+  {
+    $project: {
+      _id: 1,
+      title: 1,
+      author: 1,
+      description: 1,
+      genre: 1,
+      year: 1,
+      coverImage: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      avgRating: 1,
+      reviewCount: 1,
+      'addedBy._id': 1,
+      'addedBy.name': 1
+    }
+  }
+];
 
 let sortOptions = { createdAt: -1 };
 if (sortBy === 'year') {
   sortOptions = { year: -1 };
+} else if (sortBy === 'rating') {
+  sortOptions = { avgRating: -1 };
 }
+aggregation.push({ $sort: sortOptions });
 
-const total = await Book.countDocuments(matchFilter);
-const books = await Book.find(matchFilter).sort(sortOptions).skip(skip).limit(limit).populate('addedBy', 'name');
+const totalResult = await Book.aggregate([
+  { $match: matchFilter },
+  { $count: 'total' }
+]);
+const total = totalResult.length > 0 ? totalResult[0].total : 0;
+
+aggregation.push({ $skip: skip });
+aggregation.push({ $limit: limit });
+
+const books = await Book.aggregate(aggregation);
 
 res.json({ books, total, page, pages: Math.ceil(total / limit) });
 } catch (err) {

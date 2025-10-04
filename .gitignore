@@ -34,3 +34,9 @@ Thumbs.db
 
 # System cache
 .cache/
+
+# Uploads (keep directories but ignore uploaded files)
+backend/uploads/books/*
+backend/uploads/users/*
+!backend/uploads/books/.gitkeep
+!backend/uploads/users/.gitkeep
