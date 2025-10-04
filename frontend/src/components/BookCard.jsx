@@ -11,7 +11,7 @@ const BookCard = ({ book }) => {
   const reviewCount = book.reviewCount || 0
 
   return (
-    <Link to={`/book/${book._id}`} className="group">
+    <Link to={`/books/${book._id}`} className="group">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
         <div className="relative h-64 bg-gradient-to-br from-amber-200 to-orange-200 overflow-hidden">
           <img 
