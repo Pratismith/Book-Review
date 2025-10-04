@@ -148,6 +148,29 @@ This application requires MongoDB Atlas. Please follow these steps:
 
 ## Recent Changes
 
+### October 4, 2025: Render Deployment Fixes
+- **Fixed Missing Middlewares**:
+  - ✅ Created `backend/middlewares/auth.js` - JWT authentication middleware
+  - ✅ Created `backend/middlewares/upload.js` - Multer file upload middleware
+  - These were referenced in routes but missing from the repository
+
+- **Fixed Production Deployment**:
+  - ✅ Updated `backend/server.js` to correctly locate frontend build (`../frontend/dist`)
+  - ✅ Added file existence check before serving frontend
+  - ✅ Fixed port configuration for development (3001) vs production (auto-assigned)
+  - ✅ Added proper host binding (localhost for dev, 0.0.0.0 for production)
+
+- **Build System**:
+  - ✅ Created root `package.json` with deployment scripts
+  - ✅ Build command installs both frontend and backend dependencies
+  - ✅ Build command compiles frontend to static files
+  - ✅ Start command runs the backend server which serves the built frontend
+
+- **Documentation**:
+  - ✅ Created `RENDER_DEPLOYMENT.md` with comprehensive deployment guide
+  - ✅ Includes step-by-step instructions for Render deployment
+  - ✅ Covers MongoDB Atlas setup, environment variables, and troubleshooting
+
 ### October 4, 2025: Image Upload & Profile Endpoints Implementation
 - **Image Upload System**:
   - ✅ Added `coverImage` field to Book model
@@ -211,9 +234,25 @@ In production mode:
 - All other routes serve the React SPA
 - MongoDB connection must be accessible from deployment environment
 
+## Deploying to Render
+
+For detailed instructions on deploying this app to Render, see **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)**.
+
+### Quick Start for Render:
+1. Push your code to GitHub
+2. Create a new Web Service on Render
+3. Connect your GitHub repository
+4. Set build command: `npm run build`
+5. Set start command: `npm start`
+6. Add environment variables: `MONGO_URI`, `JWT_SECRET`, `NODE_ENV=production`
+7. Deploy!
+
+The app will automatically build the frontend and serve it from the backend.
+
 ## Known Issues
 1. **MongoDB Connection**: Requires MongoDB Atlas setup (see instructions above)
 2. **IP Whitelisting**: Must whitelist `0.0.0.0/0` or Replit's IP in MongoDB Atlas Network Access
+3. **Image Persistence on Render**: Free tier doesn't persist uploaded files after restart. Consider using cloud storage (S3, Cloudinary) for production.
 
 ## Tips for Competition Submission
 - The app features a beautiful, modern design with smooth animations
