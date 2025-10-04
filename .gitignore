@@ -32,8 +32,5 @@ frontend/build/
 .DS_Store
 Thumbs.db
 
-# Replit
-.replit
-replit.nix
+# System cache
 .cache/
-.config/
