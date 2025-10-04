@@ -25,7 +25,7 @@ const payload = { id: user._id };
 const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 
 
-res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+res.status(201).json({ token, user: { _id: user._id, name: user.name, email: user.email } });
 } catch (err) {
 console.error(err);
 res.status(500).json({ message: 'Server error' });
@@ -48,7 +48,7 @@ if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
 
 const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
-res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+res.json({ token, user: { _id: user._id, name: user.name, email: user.email } });
 } catch (err) {
 console.error(err);
 res.status(500).json({ message: 'Server error' });
