@@ -20,25 +20,11 @@ const Profile = () => {
 
   const fetchMyData = async () => {
     try {
-      const { data } = await api.get('/books')
-      const userBooks = data.books.filter(
-        (book) => book.addedBy?._id === user._id
-      )
-      setMyBooks(userBooks)
+      const booksResponse = await api.get('/books/my-books')
+      setMyBooks(booksResponse.data)
 
-      const allReviews = []
-      for (const book of data.books) {
-        const reviewData = await api.get(`/reviews/${book._id}`)
-        const userReviewsForBook = reviewData.data.filter(
-          (review) => review.userId?._id === user._id
-        )
-        allReviews.push(...userReviewsForBook.map(review => ({
-          ...review,
-          bookTitle: book.title,
-          bookId: book._id
-        })))
-      }
-      setMyReviews(allReviews)
+      const reviewsResponse = await api.get('/reviews/my-reviews')
+      setMyReviews(reviewsResponse.data)
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -126,20 +112,29 @@ const Profile = () => {
                   className="border-2 border-amber-200 rounded-2xl p-6 hover:border-amber-400 transition-all duration-300 bg-gradient-to-r from-amber-50 to-orange-50"
                 >
                   <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-amber-900 mb-2">{book.title}</h3>
-                      <p className="text-amber-600 font-medium mb-3">by {book.author}</p>
-                      <div className="flex gap-2 flex-wrap">
-                        {book.genre && (
-                          <span className="inline-block bg-amber-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
-                            {book.genre}
-                          </span>
-                        )}
-                        {book.year && (
-                          <span className="inline-block bg-orange-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
-                            {book.year}
-                          </span>
-                        )}
+                    <div className="flex gap-6 flex-1">
+                      {book.coverImage && (
+                        <img
+                          src={book.coverImage}
+                          alt={book.title}
+                          className="w-24 h-32 object-cover rounded-lg shadow-md"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-amber-900 mb-2">{book.title}</h3>
+                        <p className="text-amber-600 font-medium mb-3">by {book.author}</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {book.genre && (
+                            <span className="inline-block bg-amber-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                              {book.genre}
+                            </span>
+                          )}
+                          {book.year && (
+                            <span className="inline-block bg-orange-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                              {book.year}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex gap-3">
@@ -163,7 +158,6 @@ const Profile = () => {
           )}
         </div>
 
-        {/* User's Reviews Section */}
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-amber-200 mt-10">
           <h2 className="text-3xl font-bold text-amber-900 mb-8 flex items-center">
             <svg className="w-8 h-8 mr-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

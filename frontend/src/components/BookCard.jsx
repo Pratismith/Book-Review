@@ -6,12 +6,14 @@ const BookCard = ({ book }) => {
     return `https://source.unsplash.com/400x600/?book,${query}`
   }
 
+  const displayImage = book.coverImage || getBookCoverUrl(book.title, book.author)
+
   return (
-    <Link to={`/books/${book._id}`} className="group">
+    <Link to={`/book/${book._id}`} className="group">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
         <div className="relative h-64 bg-gradient-to-br from-amber-200 to-orange-200 overflow-hidden">
           <img 
-            src={getBookCoverUrl(book.title, book.author)}
+            src={displayImage}
             alt={book.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {

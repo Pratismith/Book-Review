@@ -86,6 +86,7 @@ const BookDetails = () => {
   }
 
   const userReview = reviews.find((r) => r.userId?._id === user?._id)
+  const displayImage = book.coverImage || getBookCoverUrl(book.title, book.author)
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -94,7 +95,7 @@ const BookDetails = () => {
           <div className="grid md:grid-cols-2 gap-10 p-10">
             <div>
               <img 
-                src={getBookCoverUrl(book.title, book.author)}
+                src={displayImage}
                 alt={book.title}
                 className="w-full rounded-2xl shadow-2xl"
                 onError={(e) => {

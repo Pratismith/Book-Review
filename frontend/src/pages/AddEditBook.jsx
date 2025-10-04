@@ -8,6 +8,8 @@ const AddEditBook = () => {
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [coverImage, setCoverImage] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -42,6 +44,9 @@ const AddEditBook = () => {
         genre: data.book.genre || '',
         year: data.book.year || '',
       })
+      if (data.book.coverImage) {
+        setPreviewUrl(data.book.coverImage)
+      }
     } catch (error) {
       console.error('Error fetching book:', error)
       navigate('/')
@@ -55,15 +60,38 @@ const AddEditBook = () => {
     })
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setCoverImage(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      const formDataToSend = new FormData()
+      formDataToSend.append('title', formData.title)
+      formDataToSend.append('author', formData.author)
+      formDataToSend.append('description', formData.description)
+      formDataToSend.append('genre', formData.genre)
+      formDataToSend.append('year', formData.year)
+      
+      if (coverImage) {
+        formDataToSend.append('coverImage', coverImage)
+      }
+
       if (id) {
-        await api.put(`/books/${id}`, formData)
+        await api.put(`/books/${id}`, formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       } else {
-        await api.post('/books', formData)
+        await api.post('/books', formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       }
       navigate('/profile')
     } catch (error) {
@@ -94,6 +122,34 @@ const AddEditBook = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-amber-900 font-semibold mb-2">
+                Book Cover Image
+              </label>
+              <div className="flex items-center gap-6">
+                {previewUrl && (
+                  <div className="relative">
+                    <img
+                      src={previewUrl}
+                      alt="Book cover preview"
+                      className="w-32 h-40 object-cover rounded-lg shadow-lg border-2 border-amber-200"
+                    />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full px-4 py-3 border-2 border-dashed border-amber-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-amber-400/30 focus:border-amber-500 transition-all duration-300 text-gray-700 bg-amber-50 hover:bg-amber-100 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer"
+                  />
+                  <p className="mt-2 text-sm text-gray-600">
+                    Upload a cover image for your book (JPG, PNG, GIF, WebP - Max 5MB)
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <label className="block text-amber-900 font-semibold mb-2">
                 Title <span className="text-red-500">*</span>
@@ -152,6 +208,10 @@ const AddEditBook = () => {
                   <option value="Sci-Fi">Sci-Fi</option>
                   <option value="Romance">Romance</option>
                   <option value="Thriller">Thriller</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Biography">Biography</option>
+                  <option value="History">History</option>
+                  <option value="Self-Help">Self-Help</option>
                 </select>
               </div>
 
