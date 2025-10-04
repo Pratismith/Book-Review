@@ -15,11 +15,7 @@ npm-debug.log*
 logs/
 /tmp/
 
-# Build outputs
-dist/
-build/
-frontend/dist/
-frontend/build/
+
 
 # IDE
 .vscode/
