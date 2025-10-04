@@ -5,7 +5,16 @@ const Review = require('../models/Review');
 exports.addBook = async (req, res) => {
 try {
 const { title, author, description, genre, year } = req.body;
-const book = new Book({ title, author, description, genre, year, addedBy: req.user._id });
+const coverImage = req.file ? `/uploads/books/${req.file.filename}` : null;
+const book = new Book({ 
+  title, 
+  author, 
+  description, 
+  genre, 
+  year, 
+  coverImage,
+  addedBy: req.user._id 
+});
 await book.save();
 res.status(201).json(book);
 } catch (err) {
@@ -15,7 +24,6 @@ res.status(500).json({ message: 'Server error' });
 };
 
 
-// Edit book
 exports.updateBook = async (req, res) => {
 try {
 const book = await Book.findById(req.params.id);
@@ -25,6 +33,11 @@ if (book.addedBy.toString() !== req.user._id.toString()) return res.status(403).
 
 const updates = ['title','author','description','genre','year'];
 updates.forEach(k => { if (req.body[k] !== undefined) book[k] = req.body[k]; });
+
+if (req.file) {
+  book.coverImage = `/uploads/books/${req.file.filename}`;
+}
+
 await book.save();
 res.json(book);
 } catch (err) {
@@ -34,7 +47,6 @@ res.status(500).json({ message: 'Server error' });
 };
 
 
-// Delete book
 exports.deleteBook = async (req, res) => {
 try {
 const book = await Book.findById(req.params.id);
@@ -60,14 +72,12 @@ const skip = (page - 1) * limit;
 
 const q = (req.query.q || '').trim();
 const genre = req.query.genre;
-const sortBy = req.query.sortBy; // 'year', 'rating', or default (newest)
+const sortBy = req.query.sortBy;
 
-// Build match filter for aggregation
 const matchFilter = {};
 if (q) matchFilter.$or = [ { title: new RegExp(q, 'i') }, { author: new RegExp(q, 'i') } ];
 if (genre) matchFilter.genre = genre;
 
-// If sorting by rating, use aggregation
 if (sortBy === 'rating') {
   const aggregation = [
     { $match: matchFilter },
@@ -108,6 +118,7 @@ if (sortBy === 'rating') {
         description: 1,
         genre: 1,
         year: 1,
+        coverImage: 1,
         createdAt: 1,
         updatedAt: 1,
         avgRating: 1,
@@ -131,10 +142,9 @@ if (sortBy === 'rating') {
   return res.json({ books, total, page, pages: Math.ceil(total / limit) });
 }
 
-// For non-rating sorts, use regular query
-let sortOptions = { createdAt: -1 }; // default: newest first
+let sortOptions = { createdAt: -1 };
 if (sortBy === 'year') {
-  sortOptions = { year: -1 }; // highest year first
+  sortOptions = { year: -1 };
 }
 
 const total = await Book.countDocuments(matchFilter);
@@ -148,7 +158,6 @@ res.status(500).json({ message: 'Server error' });
 };
 
 
-// Get book details + reviews + average rating
 exports.getBookDetails = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id).populate('addedBy', 'name email');
@@ -166,5 +175,18 @@ exports.getBookDetails = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.getMyBooks = async (req, res) => {
+  try {
+    const books = await Book.find({ addedBy: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate('addedBy', 'name');
+    res.json(books);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };

@@ -1,4 +1,5 @@
 const Review = require('../models/Review');
+const Book = require('../models/Book');
 
 
 exports.addReview = async (req, res) => {
@@ -7,7 +8,6 @@ const { rating, reviewText } = req.body;
 const bookId = req.params.bookId;
 
 
-// Prevent duplicate review by same user on same book (optional)
 const existing = await Review.findOne({ bookId, userId: req.user._id });
 if (existing) return res.status(400).json({ message: 'You already reviewed this book. Edit your review instead.' });
 
@@ -62,4 +62,29 @@ res.json(reviews);
 console.error(err);
 res.status(500).json({ message: 'Server error' });
 }
+};
+
+
+exports.getMyReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ userId: req.user._id })
+      .populate('userId', 'name')
+      .sort({ createdAt: -1 });
+    
+    const reviewsWithBooks = await Promise.all(
+      reviews.map(async (review) => {
+        const book = await Book.findById(review.bookId);
+        return {
+          ...review.toObject(),
+          bookTitle: book ? book.title : 'Unknown Book',
+          bookId: book ? book._id : null
+        };
+      })
+    );
+    
+    res.json(reviewsWithBooks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };

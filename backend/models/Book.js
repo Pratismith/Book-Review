@@ -7,6 +7,7 @@ author: { type: String, required: true },
 description: String,
 genre: String,
 year: Number,
+coverImage: { type: String },
 addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
