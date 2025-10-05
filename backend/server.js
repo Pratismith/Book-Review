@@ -32,8 +32,12 @@ const corsOptions = {
     else if (origin && origin.includes('.replit.dev')) {
       callback(null, true);
     }
-    // Allow Netlify domains (production and preview deploys)
-    else if (origin && origin.includes('.netlify.app')) {
+    // Allow Vercel domains (production and preview deploys)
+    else if (origin && origin.includes('.vercel.app')) {
+      callback(null, true);
+    }
+    // Allow Firebase domains
+    else if (origin && (origin.includes('.firebaseapp.com') || origin.includes('.web.app'))) {
       callback(null, true);
     }
     // Allow all in development
@@ -73,10 +77,15 @@ if (fs.existsSync(frontendPath)) {
   console.log('⚠️  Frontend build not found, API only mode.');
 }
 
-// Railway-friendly port
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
-});
+// Start server only if not running as Vercel serverless function
+if (process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
