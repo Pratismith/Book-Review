@@ -1,3 +1,4 @@
+// backend/server.js
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -9,10 +10,17 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 
-// Static file for uploads
+// Allow only your frontend origin in production
+// (Set FRONTEND_URL in Railway environment variables to your Netlify site URL)
+const FRONTEND_URL = process.env.FRONTEND_URL || '*';
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true
+}));
+
+// Serve uploads/static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect DB
@@ -23,7 +31,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/reviews', require('./routes/reviews'));
 
-// Serve frontend build (production)
+// Serve frontend build (for production)
 const frontendPath = path.join(__dirname, '..', 'frontend', 'dist');
 if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath));
@@ -36,7 +44,6 @@ if (fs.existsSync(frontendPath)) {
   console.log('   API only mode - frontend should be running separately');
 }
 
-// Start server
+// Start server (Railway/Netlify-compatible)
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
-app.listen(PORT, HOST, () => console.log(`✅ Server running on ${HOST}:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`✅ Server running on port ${PORT}`));
