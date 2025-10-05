@@ -36,3 +36,4 @@ backend/uploads/books/*
 backend/uploads/users/*
 !backend/uploads/books/.gitkeep
 !backend/uploads/users/.gitkeep
+.vercel

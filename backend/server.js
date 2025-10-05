@@ -12,45 +12,78 @@ const app = express();
 app.use(express.json());
 
 // CORS Configuration
+// const allowedOrigins = [
+//   'http://localhost:5000',
+//   'http://localhost:3000',
+//   process.env.FRONTEND_URL
+// ].filter(Boolean);
+
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (mobile apps, Postman, etc.)
+//     if (!origin) {
+//       callback(null, true);
+//     } 
+//     // Allow configured origins
+//     else if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } 
+//     // Allow Replit domains in development
+//     else if (origin && origin.includes('.replit.dev')) {
+//       callback(null, true);
+//     }
+//     // Allow Vercel domains (production and preview deploys)
+//     else if (origin && origin.includes('.vercel.app')) {
+//       callback(null, true);
+//     }
+//     // Allow Firebase domains
+//     else if (origin && (origin.includes('.firebaseapp.com') || origin.includes('.web.app'))) {
+//       callback(null, true);
+//     }
+//     // Allow all in development
+//     else if (process.env.NODE_ENV !== 'production') {
+//       callback(null, true);
+//     } 
+//     else {
+//       console.error(`CORS blocked origin: ${origin}`);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true
+// };
+
+// CORS Configuration
+
+
 const allowedOrigins = [
-  'http://localhost:5000',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL_LOCAL,
+  process.env.FRONTEND_URL_VERCEL,
+  process.env.FRONTEND_URL_FIREBASE,
 ].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) {
-      callback(null, true);
-    } 
-    // Allow configured origins
-    else if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } 
-    // Allow Replit domains in development
-    else if (origin && origin.includes('.replit.dev')) {
-      callback(null, true);
-    }
-    // Allow Vercel domains (production and preview deploys)
-    else if (origin && origin.includes('.vercel.app')) {
-      callback(null, true);
-    }
-    // Allow Firebase domains
-    else if (origin && (origin.includes('.firebaseapp.com') || origin.includes('.web.app'))) {
-      callback(null, true);
-    }
-    // Allow all in development
-    else if (process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } 
-    else {
-      console.error(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Allow requests with no origin (Postman, mobile apps)
+    if (!origin) return callback(null, true);
+
+    // Allow if origin matches allowed origins
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+
+    // Allow Vercel preview deploys
+    if (origin.includes('.vercel.app')) return callback(null, true);
+
+    // Allow Firebase hosting
+    if (origin.includes('.firebaseapp.com') || origin.includes('.web.app')) return callback(null, true);
+
+    // Allow all in development mode
+    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+
+    console.error(`CORS blocked origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
   },
-  credentials: true
+  credentials: true,
 };
+
 
 app.use(cors(corsOptions));
 
