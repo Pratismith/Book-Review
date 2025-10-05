@@ -12,13 +12,29 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// Allow only your frontend origin in production
-// (Set FRONTEND_URL in Railway environment variables to your Netlify site URL)
-const FRONTEND_URL = process.env.FRONTEND_URL || '*';
-app.use(cors({
-  origin: FRONTEND_URL,
-  credentials: true
-}));
+// CORS Configuration - Allow frontend origins
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://localhost:3000',
+  'https://localhost:5000',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Serve uploads/static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -44,6 +60,10 @@ if (fs.existsSync(frontendPath)) {
   console.log('   API only mode - frontend should be running separately');
 }
 
-// Start server (Railway/Netlify-compatible)
+// Start server (Railway-compatible - uses dynamic PORT)
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
+});
