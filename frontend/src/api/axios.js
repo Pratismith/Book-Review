@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 const API_BASE = import.meta.env.PROD
-  ? import.meta.env.VITE_API_URL || '/api' // Netlify will proxy /api to your backend
-  : 'http://localhost:3001/api';
+  ? import.meta.env.VITE_API_URL || '/api'
+  : '/api'; // Use proxy in development (configured in vite.config.js)
 
 // Create axios instance
 const api = axios.create({
