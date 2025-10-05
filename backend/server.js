@@ -18,12 +18,6 @@ const allowedOrigins = [
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
-<<<<<<< HEAD
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error('Not allowed by CORS'));
-=======
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, etc.)
@@ -50,10 +44,11 @@ const corsOptions = {
       console.error(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
->>>>>>> ddb3e7f (Allow access from Netlify domains to resolve signup/login issues)
   },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Serve uploads/static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
