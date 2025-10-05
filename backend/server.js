@@ -18,10 +18,39 @@ const allowedOrigins = [
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
+<<<<<<< HEAD
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
+=======
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) {
+      callback(null, true);
+    } 
+    // Allow configured origins
+    else if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } 
+    // Allow Replit domains in development
+    else if (origin && origin.includes('.replit.dev')) {
+      callback(null, true);
+    }
+    // Allow Netlify domains (production and preview deploys)
+    else if (origin && origin.includes('.netlify.app')) {
+      callback(null, true);
+    }
+    // Allow all in development
+    else if (process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } 
+    else {
+      console.error(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+>>>>>>> ddb3e7f (Allow access from Netlify domains to resolve signup/login issues)
   },
   credentials: true
 }));
